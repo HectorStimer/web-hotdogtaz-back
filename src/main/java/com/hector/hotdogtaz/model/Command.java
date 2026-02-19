@@ -4,7 +4,9 @@ package com.hector.hotdogtaz.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "commands")
@@ -12,27 +14,47 @@ public class Command {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int number;
+
+    @Column(nullable = false)
+    private Integer number;
+
+    @Column(name = "table_number")
+    private Integer tableNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status = Status.CREATED;
+
+    @Column(nullable = false)
     private BigDecimal total;
+
+    @Column(columnDefinition = "TEXT")
     private String observation;
-    private LocalDate openingDate;
-    private LocalDate closingDate;
-    private Status commandStatus;
+
+    @Column(name = "opening_date", nullable = false)
+    private LocalDateTime openingDate;
+
+    @Column(name = "closing_date")
+    private LocalDateTime closingDate;
+
+    @OneToMany(mappedBy = "command", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Request> requests = new ArrayList<>();
 
     protected Command(){}
 
-    public Command(Long id, int number, BigDecimal total, String observation, LocalDate openingDate, LocalDate closingDate){
-        this.id=id;
-        this.number=number;
-        this.total=total;
-        this.observation=observation;
-        this.openingDate=openingDate;
-        this.closingDate=closingDate;
+    public Command(Integer number, Integer tableNumber, BigDecimal total, String observation){
+        this.number = number;
+        this.tableNumber = tableNumber;
+        this.total = total;
+        this.observation = observation;
     }
 
     @PrePersist
     protected void onCreate() {
-        this.openingDate = LocalDate.now();
+        this.openingDate = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = Status.CREATED;
+        }
     }
 
     public enum Status{
@@ -43,11 +65,36 @@ public class Command {
         CANCELED
     }
 
-
-
-
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public Integer getTableNumber() {
+        return tableNumber;
+    }
+
+    public void setTableNumber(Integer tableNumber) {
+        this.tableNumber = tableNumber;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public BigDecimal getTotal() {
@@ -58,31 +105,35 @@ public class Command {
         this.total = total;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
+    public String getObservation() {
+        return observation;
     }
 
     public void setObservation(String observation) {
         this.observation = observation;
     }
 
-    public String getObservation() {
-        return observation;
-    }
-
-    public LocalDate getOpeningDate() {
+    public LocalDateTime getOpeningDate() {
         return openingDate;
     }
 
-    public LocalDate getClosingDate() {
+    public void setOpeningDate(LocalDateTime openingDate) {
+        this.openingDate = openingDate;
+    }
+
+    public LocalDateTime getClosingDate() {
         return closingDate;
     }
 
-    public void setClosingDate(LocalDate closingDate) {
+    public void setClosingDate(LocalDateTime closingDate) {
         this.closingDate = closingDate;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
     }
 }

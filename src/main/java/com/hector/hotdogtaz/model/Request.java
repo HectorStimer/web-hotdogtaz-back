@@ -3,7 +3,7 @@ package com.hector.hotdogtaz.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,48 +14,45 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(nullable = false)
-    private String clientName;
-
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private Status status = Status.CREATED;
 
+    @Column(columnDefinition = "TEXT")
+    private String observation;
 
-    @Column(nullable = false)
-    private BigDecimal total;
-
-
-    private LocalDate createdAt;
+    @Column(name = "order_date", nullable = false)
+    private LocalDateTime orderDate;
 
     @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemRequest> items = new ArrayList<>();
+
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RequestEvent> events = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name="user_id")
     private User createdBy;
 
-
     @ManyToOne
-    @JoinColumn(name="command_id")
+    @JoinColumn(name="command_id", nullable = false)
     private Command command;
 
     protected Request(){}
 
-    public Request(String clientName, Status status, BigDecimal total){
-        this.clientName=clientName;
-        this.status= status;
-        this.total = total;
+    public Request(Status status, String observation, Command command){
+        this.status = status != null ? status : Status.CREATED;
+        this.observation = observation;
+        this.command = command;
     }
-
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now(); // metodo p qnd criar o usuario tacar a data insta
+        this.orderDate = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = Status.CREATED;
+        }
     }
-
 
     public enum Status{
         CREATED,
@@ -65,8 +62,37 @@ public class Request {
         CANCELED
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public String getObservation() {
+        return observation;
+    }
+
+    public void setObservation(String observation) {
+        this.observation = observation;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
 
     public List<ItemRequest> getItems() {
         return items;
@@ -76,39 +102,27 @@ public class Request {
         this.items = items;
     }
 
-
-    public Long getId() {
-        return id;
+    public List<RequestEvent> getEvents() {
+        return events;
     }
 
-    public String getClientName() {
-        return clientName;
+    public void setEvents(List<RequestEvent> events) {
+        this.events = events;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
+    public User getCreatedBy() {
+        return createdBy;
     }
 
-    public Status getStatus(){
-        return status;
-
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public Command getCommand() {
+        return command;
     }
 
-    public BigDecimal getTotal() {
-        return total;
+    public void setCommand(Command command) {
+        this.command = command;
     }
-
-    public void setTotal(BigDecimal total) {
-        this.total = total;
-    }
-
-
-
-
 }
-
-
