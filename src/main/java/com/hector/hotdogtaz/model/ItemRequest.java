@@ -12,30 +12,25 @@ public class ItemRequest {
 
 
     @ManyToOne
-    @JoinColumn(name="request_id", nullable = false)
+    @JoinColumn(name = "request_id", nullable = false)
     private Request request;
 
     @ManyToOne
-    @JoinColumn(name="product_id", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
 
     @Column(nullable = false)
     private int amount;
 
-    private String observation;
 
+    protected ItemRequest() {
+    }
 
-
-
-
-    protected ItemRequest(){}
-
-    public ItemRequest(Request request, Product product, int amount, String observation){
-        this.request=request;
-        this.product=product;
-        this.amount=amount;
-        this.observation=observation;
+    public ItemRequest(Request request, Product product, int amount) {
+        this.request = request;
+        this.product = product;
+        this.amount = amount;
     }
 
 
@@ -67,11 +62,4 @@ public class ItemRequest {
         this.amount = amount;
     }
 
-    public String getObservation() {
-        return observation;
-    }
-
-    public void setObservation(String observation) {
-        this.observation = observation;
-    }
 }

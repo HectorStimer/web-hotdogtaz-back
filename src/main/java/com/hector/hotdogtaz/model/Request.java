@@ -37,6 +37,11 @@ public class Request {
     @JoinColumn(name="user_id")
     private User createdBy;
 
+
+    @ManyToOne
+    @JoinColumn(name="command_id")
+    private Command command;
+
     protected Request(){}
 
     public Request(String clientName, Status status, BigDecimal total){

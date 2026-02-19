@@ -48,10 +48,6 @@ public class User {
     }
 
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDate.now(); // metodo p qnd criar o usuario tacar a data insta
-    }
 
 
     public enum UserType{
