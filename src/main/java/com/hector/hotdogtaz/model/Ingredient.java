@@ -14,10 +14,14 @@ public class Ingredient {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     protected Ingredient() {}
 
     public Ingredient(String name) {
         this.name = name;
+        this.active=active;
     }
 
     public Long getId() {
@@ -35,4 +39,12 @@ public class Ingredient {
     public void setName(String name) {
         this.name = name;
     }
-}
+
+    public boolean getActive(){
+        return active;
+    }
+
+    public void setActive(boolean active){
+        this.active=active;
+
+    }}
