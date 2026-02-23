@@ -1,4 +1,4 @@
-package com.hector.hotdogtaz.dto.request;
+package com.hector.hotdogtaz.dto.request.Product;
 
 import com.hector.hotdogtaz.model.Category;
 import com.hector.hotdogtaz.model.ProductIngredient;

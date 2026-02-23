@@ -1,7 +1,7 @@
 package com.hector.hotdogtaz.service;
 
 
-import com.hector.hotdogtaz.dto.request.IngredientDTO;
+import com.hector.hotdogtaz.dto.request.Ingredient.IngredientDTO;
 import com.hector.hotdogtaz.model.Ingredient;
 import com.hector.hotdogtaz.repository.IngredientRepository;
 import org.slf4j.Logger;

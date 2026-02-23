@@ -1,7 +1,7 @@
 package com.hector.hotdogtaz.service;
 
-import com.hector.hotdogtaz.dto.request.CreateUserDTO;
-import com.hector.hotdogtaz.dto.request.UpdateUserDTO;
+import com.hector.hotdogtaz.dto.request.User.CreateUserDTO;
+import com.hector.hotdogtaz.dto.request.User.UpdateUserDTO;
 import com.hector.hotdogtaz.dto.response.UserResponseDTO;
 import com.hector.hotdogtaz.model.User;
 import com.hector.hotdogtaz.repository.UserRepository;

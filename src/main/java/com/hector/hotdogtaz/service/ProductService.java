@@ -1,8 +1,8 @@
 package com.hector.hotdogtaz.service;
 
 
-import com.hector.hotdogtaz.dto.request.CreateProductDTO;
-import com.hector.hotdogtaz.dto.request.UpdateProductDTO;
+import com.hector.hotdogtaz.dto.request.Product.CreateProductDTO;
+import com.hector.hotdogtaz.dto.request.Product.UpdateProductDTO;
 import com.hector.hotdogtaz.dto.response.ProductResponseDTO;
 import com.hector.hotdogtaz.mapper.ProductMapper;
 import com.hector.hotdogtaz.model.Ingredient;
@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ProductService {

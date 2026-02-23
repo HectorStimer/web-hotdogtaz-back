@@ -1,4 +1,4 @@
-package com.hector.hotdogtaz.dto.request;
+package com.hector.hotdogtaz.dto.request.User;
 import com.hector.hotdogtaz.model.User.UserType;
 
 import java.time.LocalDate;

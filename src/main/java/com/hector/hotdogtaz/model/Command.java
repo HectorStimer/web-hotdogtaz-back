@@ -42,11 +42,11 @@ public class Command {
 
     protected Command(){}
 
-    public Command(Integer number, Integer tableNumber, BigDecimal total, String observation){
+    public Command(Integer number, Integer tableNumber, String observation) {
         this.number = number;
         this.tableNumber = tableNumber;
-        this.total = total;
         this.observation = observation;
+        this.total = BigDecimal.ZERO;
     }
 
     @PrePersist
