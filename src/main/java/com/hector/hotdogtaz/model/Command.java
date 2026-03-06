@@ -56,6 +56,13 @@ public class Command {
             this.status = Status.CREATED;
         }
     }
+    public void recalculateTotal() {
+        this.total = requests.stream()
+                .flatMap(request -> request.getItems().stream())
+                .map(item -> item.getUnitPrice()
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
     public enum Status{
         CREATED,

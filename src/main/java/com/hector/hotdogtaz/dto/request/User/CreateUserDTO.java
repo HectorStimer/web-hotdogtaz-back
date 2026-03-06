@@ -6,7 +6,5 @@ import java.time.LocalDate;
 public record CreateUserDTO(String name,
                             String email,
                             String password,
-                            boolean active,
-                            LocalDate createdAt,
                             UserType type) {
 }

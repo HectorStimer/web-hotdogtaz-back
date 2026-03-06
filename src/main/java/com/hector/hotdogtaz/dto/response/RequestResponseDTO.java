@@ -11,6 +11,6 @@ public record RequestResponseDTO(Long id,
                                  Status status,
                                  String observation,
                                  LocalDateTime orderDate,
-                                 List<ItemRequest> items,
-                                 List<RequestEvent> events) {
+                                 List<ItemRequestResponseDTO> items,
+                                 List<RequestEventResponseDTO> events) {
 }

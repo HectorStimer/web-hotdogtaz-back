@@ -6,6 +6,5 @@ import java.util.List;
 
 public record CreateCommandDTO(Integer number,
                                Integer tableNumber,
-                               String observation,
-                               List<Request> requests) {
+                               String observation) {
 }

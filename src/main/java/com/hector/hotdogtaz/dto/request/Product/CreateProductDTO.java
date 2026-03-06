@@ -7,6 +7,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record CreateProductDTO(String name, String description, BigDecimal price,
-                               String imageUrl, Category category,
-                               List<ProductIngredient> ingredients) {
+                               String imageUrl, Long categoryId,
+                               List<Long> ingredientId) {
 }

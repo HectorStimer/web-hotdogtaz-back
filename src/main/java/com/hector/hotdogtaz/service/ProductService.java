@@ -5,86 +5,115 @@ import com.hector.hotdogtaz.dto.request.Product.CreateProductDTO;
 import com.hector.hotdogtaz.dto.request.Product.UpdateProductDTO;
 import com.hector.hotdogtaz.dto.response.ProductResponseDTO;
 import com.hector.hotdogtaz.mapper.ProductMapper;
+import com.hector.hotdogtaz.model.Category;
 import com.hector.hotdogtaz.model.Ingredient;
 import com.hector.hotdogtaz.model.Product;
+import com.hector.hotdogtaz.model.ProductIngredient;
+import com.hector.hotdogtaz.repository.CategoryRepository;
+import com.hector.hotdogtaz.repository.IngredientRepository;
 import com.hector.hotdogtaz.repository.ProductRepository;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class ProductService {
-    private final static Logger logger =
-            LoggerFactory.getLogger(ProductService.class);
-
-
     private final ProductRepository repository;
-    private final ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
+    private final IngredientRepository ingredientRepository;
+    private final ProductMapper mapper;
 
 
-    public ProductService(ProductRepository repository, ProductMapper productMapper) {
+    public ProductService(ProductRepository repository,
+                          CategoryRepository categoryRepository,
+                          IngredientRepository ingredientRepository,
+                          ProductMapper mapper) {
         this.repository = repository;
-        this.productMapper = productMapper;
+        this.categoryRepository = categoryRepository;
+        this.ingredientRepository = ingredientRepository;
+        this.mapper = mapper;
     }
 
-    public Product save(CreateProductDTO dto) {
-        logger.info("creating a new product");
+
+
+
+
+    public ProductResponseDTO save(CreateProductDTO dto) {
+        Category category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
 
         Product product = new Product(
-                dto.name(),
-                dto.description(),
-                dto.price(),
-                dto.category(),
-                true,
-                dto.imageUrl()
+                dto.name(), dto.description(), dto.price(),
+                category, true, dto.imageUrl()
         );
 
-        return repository.save(product);
+
+        if (dto.ingredientId() != null) {
+            dto.ingredientId().forEach(ingredientId -> {
+                Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                        .orElseThrow(() -> new RuntimeException("Ingredient not found: " + ingredientId));
+                product.getIngredients().add(new ProductIngredient(product, ingredient));
+            });
+        }
+
+        return mapper.toResponse(repository.save(product));
     }
 
 
-    public Product update(UpdateProductDTO dto, Long id){
-        logger.info("updating {} product", id);
+
+
+    public ProductResponseDTO update(UpdateProductDTO dto, Long id) {
         Product product = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("product cannot found"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Category category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
         product.setName(dto.name());
         product.setDescription(dto.description());
-        product.setActive(dto.active());
-        product.setIngredients(dto.ingredients());
-        product.setImageUrl(dto.imageUrl());
-        product.setCategory(dto.category());
         product.setPrice(dto.price());
+        product.setActive(dto.active());
+        product.setImageUrl(dto.imageUrl());
+        product.setCategory(category);
 
-        return repository.save(product);
 
+        product.getIngredients().clear();
+        dto.ingredientId().forEach(ingredientId -> {
+            Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                    .orElseThrow(() -> new RuntimeException("Ingredient not found: " + ingredientId));
+            product.getIngredients().add(new ProductIngredient(product, ingredient));
+        });
+
+        return mapper.toResponse(repository.save(product));
     }
 
-    @Transactional
-    public Product deactivate(Long id){
+
+
+
+
+    public ProductResponseDTO deactivate(Long id) {
         Product product = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("product cannot found"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
         product.setActive(false);
-        return repository.save(product);
+        return mapper.toResponse(repository.save(product));
     }
 
-    public Page<ProductResponseDTO> listAllPaginated(Pageable pageable) {
-        return repository.findAll(pageable)
-                .map(productMapper::toResponse);
+
+
+
+    public Page<ProductResponseDTO> listByIngredient(Long ingredientId, Pageable pageable) {
+        Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                .orElseThrow(() -> new RuntimeException("Ingredient not found"));
+        return repository.findByIngredientsIngredient(ingredient, pageable)
+                .map(mapper::toResponse);
+    }
+    public Page<ProductResponseDTO> listAll(Pageable pageable) {
+        return repository.findAll(pageable).map(mapper::toResponse);
     }
 
-    public Page<ProductResponseDTO> listProductsActivated(Pageable pageable){
-        return repository.findByActiveTrue(pageable)
-                .map(productMapper::toResponse);
+    public Page<ProductResponseDTO> listActivated(Pageable pageable) {
+        return repository.findByActiveTrue(pageable).map(mapper::toResponse);
     }
-
-    public Page<ProductResponseDTO> listProductsByIngredients(
-            Ingredient ingredient, Pageable pageable) {
-        return repository
-                .findByIngredientsIngredient(ingredient, pageable)
-                .map(productMapper::toResponse);
-    }
-
 }

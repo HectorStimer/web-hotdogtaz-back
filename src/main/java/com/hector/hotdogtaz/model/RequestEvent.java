@@ -14,11 +14,12 @@ public class RequestEvent {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "previous_status")
-    private Status previousStatus;
+    private Request.Status previousStatus;
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "new_status", nullable = false)
-    private Status newStatus;
+    private Request.Status newStatus;
 
     @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
@@ -29,7 +30,7 @@ public class RequestEvent {
 
     protected RequestEvent() {}
 
-    public RequestEvent(Status previousStatus, Status newStatus, Request request) {
+    public RequestEvent(Request.Status previousStatus, Request.Status newStatus, Request request) {
         this.previousStatus = previousStatus;
         this.newStatus = newStatus;
         this.request = request;
@@ -40,13 +41,6 @@ public class RequestEvent {
         this.eventDate = LocalDateTime.now();
     }
 
-    public enum Status{
-        CREATED,
-        IN_PREPARATION,
-        READY,
-        COMPLETED,
-        CANCELED
-    }
 
     public Long getId() {
         return id;
@@ -56,19 +50,19 @@ public class RequestEvent {
         this.id = id;
     }
 
-    public Status getPreviousStatus() {
+    public Request.Status getPreviousStatus() {
         return previousStatus;
     }
 
-    public void setPreviousStatus(Status previousStatus) {
+    public void setPreviousStatus(Request.Status previousStatus) {
         this.previousStatus = previousStatus;
     }
 
-    public Status getNewStatus() {
+    public Request.Status getNewStatus() {
         return newStatus;
     }
 
-    public void setNewStatus(Status newStatus) {
+    public void setNewStatus(Request.Status newStatus) {
         this.newStatus = newStatus;
     }
 

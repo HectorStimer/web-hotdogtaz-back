@@ -9,6 +9,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record ProductResponseDTO(Long id, String name, String description, BigDecimal price,
-                                 boolean active, String imageUrl, Category category,
-                                 List<ProductIngredient> ingredients) {
+                                 boolean active, String imageUrl, CategoryResponseDTO category,
+                                 List<IngredientResponseDTO> ingredients) {
 }

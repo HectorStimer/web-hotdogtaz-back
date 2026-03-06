@@ -3,6 +3,7 @@ package com.hector.hotdogtaz.service;
 import com.hector.hotdogtaz.dto.request.User.CreateUserDTO;
 import com.hector.hotdogtaz.dto.request.User.UpdateUserDTO;
 import com.hector.hotdogtaz.dto.response.UserResponseDTO;
+import com.hector.hotdogtaz.mapper.UserMapper;
 import com.hector.hotdogtaz.model.User;
 import com.hector.hotdogtaz.repository.UserRepository;
 import org.slf4j.Logger;
@@ -14,107 +15,59 @@ import java.util.List;
 @Service
 public class UserService {
 
-    public static final Logger logger =
+    private static final Logger logger =
             LoggerFactory.getLogger(UserService.class);
 
-    public final UserRepository repository;
+    private final UserRepository repository;
+    private final UserMapper mapper;
 
-    public UserService(UserRepository repository){
-        this.repository=repository;
+    public UserService(UserRepository repository, UserMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
-
-    private void validateEmail(String email){
-        if(repository.existsByEmail((email))){
-            throw new RuntimeException("This email Already exists");
-
-        }
+    private void validateEmail(String email) {
+        if (repository.existsByEmail(email))
+            throw new RuntimeException("This email already exists");
     }
 
-
-
-    public User save(CreateUserDTO dto){
+    public UserResponseDTO save(CreateUserDTO dto) {
         logger.info("Creating a new User");
         validateEmail(dto.email());
-        User user = new User(
-                dto.name(),
-                dto.email(),
-                dto.password(),
-                dto.active(),
-                dto.type());
-
-        return repository.save(user);
+        User user = new User(dto.name(), dto.email(), dto.password(), true,dto.type());
+        return mapper.toResponse(repository.save(user));
     }
 
-
-
-
-    public User update(UpdateUserDTO dto, Long id){
-        logger.info("Update user {}",+id);
+    public UserResponseDTO update(UpdateUserDTO dto, Long id) {
+        logger.info("Updating user {}", id);
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("this user cannot found"));
-
+                .orElseThrow(() -> new RuntimeException("User not found"));
         user.setName(dto.name());
         user.setEmail(dto.email());
         user.setActive(dto.active());
-        return  repository.save(user);
+        return mapper.toResponse(repository.save(user));
     }
 
-
-
-
     public void deactivate(Long id) {
-        User user = repository.findById(id).orElseThrow(() -> new RuntimeException("this user cannot exists"));
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         user.setActive(false);
         repository.save(user);
     }
 
-
-
-
     public List<UserResponseDTO> listAll() {
-        return repository.findAll()
-                .stream()
-                .map(user -> new UserResponseDTO(user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.isActive(),
-                        user.getCreatedAt(),
-                        user.getType()))
+        return repository.findAll().stream()
+                .map(mapper::toResponse)
                 .toList();
     }
 
-
-
-
-    public UserResponseDTO listById(Long id){
-        User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("This user cannot found"));
-
-        return new UserResponseDTO(user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.isActive(),
-                user.getCreatedAt(),
-                user.getType());
+    public UserResponseDTO findById(Long id) {
+        return mapper.toResponse(repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-
-
-    public List<UserResponseDTO> listByStatus(Boolean active){
-        return repository.findByActiveTrue().stream()
-                .map(user -> new UserResponseDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.isActive(),
-                        user.getCreatedAt(),
-                        user.getType())
-                )
-                .toList();
+    public List<UserResponseDTO> listByStatus(Boolean active) {
+        List<User> users = active ? repository.findByActiveTrue() : repository.findAll();
+        return users.stream().map(mapper::toResponse).toList();
     }
-
-
-
-
 }

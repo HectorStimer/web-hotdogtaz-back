@@ -5,12 +5,16 @@ import com.hector.hotdogtaz.model.Product;
 import org.springframework.stereotype.Component;
 @Component
 public class ProductMapper {
+    private final CategoryMapper categoryMapper;
+    private final IngredientMapper ingredientMapper;
+
+    public ProductMapper(CategoryMapper categoryMapper, IngredientMapper ingredientMapper) {
+        this.categoryMapper = categoryMapper;
+        this.ingredientMapper = ingredientMapper;
+    }
 
     public ProductResponseDTO toResponse(Product product) {
-        if (product == null) {
-            return null;
-        }
-
+        if (product == null) return null;
         return new ProductResponseDTO(
                 product.getId(),
                 product.getName(),
@@ -18,8 +22,10 @@ public class ProductMapper {
                 product.getPrice(),
                 product.getActive(),
                 product.getImageUrl(),
-                product.getCategory(),
-                product.getIngredients()
+                categoryMapper.toResponse(product.getCategory()),
+                product.getIngredients().stream()
+                        .map(pi -> ingredientMapper.toResponse(pi.getIngredient()))
+                        .toList()
         );
     }
 }
