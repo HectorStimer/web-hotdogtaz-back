@@ -3,8 +3,10 @@ package com.hector.hotdogtaz.mapper;
 import com.hector.hotdogtaz.dto.response.ProductResponseDTO;
 import com.hector.hotdogtaz.model.Product;
 import org.springframework.stereotype.Component;
+
 @Component
 public class ProductMapper {
+
     private final CategoryMapper categoryMapper;
     private final IngredientMapper ingredientMapper;
 
@@ -14,7 +16,10 @@ public class ProductMapper {
     }
 
     public ProductResponseDTO toResponse(Product product) {
-        if (product == null) return null;
+        if (product == null) {
+            return null;
+        }
+
         return new ProductResponseDTO(
                 product.getId(),
                 product.getName(),
@@ -23,9 +28,7 @@ public class ProductMapper {
                 product.getActive(),
                 product.getImageUrl(),
                 categoryMapper.toResponse(product.getCategory()),
-                product.getIngredients().stream()
-                        .map(pi -> ingredientMapper.toResponse(pi.getIngredient()))
-                        .toList()
+                product.getIngredients().stream().map(pi -> ingredientMapper.toResponse(pi.getIngredient())).toList()
         );
     }
 }

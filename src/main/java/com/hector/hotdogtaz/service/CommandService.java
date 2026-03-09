@@ -7,6 +7,8 @@ import com.hector.hotdogtaz.mapper.CommandMapper;
 import com.hector.hotdogtaz.model.Command;
 import com.hector.hotdogtaz.repository.CommandRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,9 +49,7 @@ public class CommandService {
         return mapper.toResponse(command);
     }
 
-    public List<CommandResponseDTO> listAll() {
-        return repository.findAll().stream()
-                .map(mapper::toResponse)
-                .toList();
+    public Page<CommandResponseDTO> listAll(Pageable pageable) {
+        return repository.findAll(pageable).map(mapper::toResponse);
     }
 }

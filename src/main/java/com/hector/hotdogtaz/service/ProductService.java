@@ -116,4 +116,9 @@ public class ProductService {
     public Page<ProductResponseDTO> listActivated(Pageable pageable) {
         return repository.findByActiveTrue(pageable).map(mapper::toResponse);
     }
+
+    public ProductResponseDTO findById(Long id) {
+        return mapper.toResponse(repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found")));
+    }
 }

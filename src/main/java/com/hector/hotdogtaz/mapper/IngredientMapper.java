@@ -10,8 +10,7 @@ public class IngredientMapper {
         if (ingredient == null) return null;
         return new IngredientResponseDTO(
                 ingredient.getId(),
-                ingredient.getName(),
-                ingredient.getActive()
+                ingredient.getName()
         );
     }
 }

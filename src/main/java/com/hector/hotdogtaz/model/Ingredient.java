@@ -21,7 +21,7 @@ public class Ingredient {
 
     public Ingredient(String name) {
         this.name = name;
-        this.active=active;
+        this.active = true;
     }
 
     public Long getId() {
