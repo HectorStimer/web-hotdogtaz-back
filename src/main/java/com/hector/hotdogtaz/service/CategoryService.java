@@ -2,6 +2,7 @@ package com.hector.hotdogtaz.service;
 
 import com.hector.hotdogtaz.dto.request.Category.CreateCategoryDTO;
 import com.hector.hotdogtaz.dto.response.CategoryResponseDTO;
+import com.hector.hotdogtaz.exception.ResourceNotFoundException;
 import com.hector.hotdogtaz.mapper.CategoryMapper;
 import com.hector.hotdogtaz.model.Category;
 import com.hector.hotdogtaz.repository.CategoryRepository;
@@ -29,14 +30,14 @@ public class CategoryService {
 
     public CategoryResponseDTO update(CreateCategoryDTO dto, Long id) {
         Category category = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
         category.setName(dto.name());
         return mapper.toResponse(repository.save(category));
     }
 
     public CategoryResponseDTO findById(Long id) {
         return mapper.toResponse(repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found")));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id)));
     }
 
     public List<CategoryResponseDTO> listAll() {
@@ -47,7 +48,7 @@ public class CategoryService {
 
     public void delete(Long id) {
         if (!repository.existsById(id))
-            throw new RuntimeException("Category not found");
+            throw new ResourceNotFoundException("Category", id);
         repository.deleteById(id);
     }
 }

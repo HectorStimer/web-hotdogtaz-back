@@ -3,6 +3,8 @@ package com.hector.hotdogtaz.service;
 import com.hector.hotdogtaz.dto.request.User.CreateUserDTO;
 import com.hector.hotdogtaz.dto.request.User.UpdateUserDTO;
 import com.hector.hotdogtaz.dto.response.UserResponseDTO;
+import com.hector.hotdogtaz.exception.BusinessException;
+import com.hector.hotdogtaz.exception.ResourceNotFoundException;
 import com.hector.hotdogtaz.mapper.UserMapper;
 import com.hector.hotdogtaz.model.User;
 import com.hector.hotdogtaz.repository.UserRepository;
@@ -28,20 +30,20 @@ public class UserService {
 
     private void validateEmail(String email) {
         if (repository.existsByEmail(email))
-            throw new RuntimeException("This email already exists");
+            throw new BusinessException("Email already exists");
     }
 
     public UserResponseDTO save(CreateUserDTO dto) {
         logger.info("Creating a new User");
         validateEmail(dto.email());
-        User user = new User(dto.name(), dto.email(), dto.password(), true,dto.type());
+        User user = new User(dto.name(), dto.email(), dto.password(), true, dto.type());
         return mapper.toResponse(repository.save(user));
     }
 
     public UserResponseDTO update(UpdateUserDTO dto, Long id) {
         logger.info("Updating user {}", id);
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
         user.setName(dto.name());
         user.setEmail(dto.email());
         user.setActive(dto.active());
@@ -50,7 +52,7 @@ public class UserService {
 
     public void deactivate(Long id) {
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
         user.setActive(false);
         repository.save(user);
     }
@@ -63,7 +65,7 @@ public class UserService {
 
     public UserResponseDTO findById(Long id) {
         return mapper.toResponse(repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found")));
+                .orElseThrow(() -> new ResourceNotFoundException("User", id)));
     }
 
     public List<UserResponseDTO> listByStatus(Boolean active) {

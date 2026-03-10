@@ -3,6 +3,7 @@ package com.hector.hotdogtaz.service;
 
 import com.hector.hotdogtaz.dto.request.Ingredient.IngredientDTO;
 import com.hector.hotdogtaz.dto.response.IngredientResponseDTO;
+import com.hector.hotdogtaz.exception.ResourceNotFoundException;
 import com.hector.hotdogtaz.mapper.IngredientMapper;
 import com.hector.hotdogtaz.model.Ingredient;
 import com.hector.hotdogtaz.repository.IngredientRepository;
@@ -35,7 +36,7 @@ public class IngredientService {
 
     public IngredientResponseDTO deactivate(Long id) {
         Ingredient ingredient = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ingredient not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", id));
         ingredient.setActive(false);
         return mapper.toResponse(repository.save(ingredient));
     }
@@ -48,7 +49,7 @@ public class IngredientService {
 
     public IngredientResponseDTO findById(Long id) {
         return mapper.toResponse(repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ingredient not found")));
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", id)));
     }
 
 }
