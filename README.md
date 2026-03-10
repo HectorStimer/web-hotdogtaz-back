@@ -135,17 +135,20 @@ Para parar os containers:
 docker compose down
 ```
 
-### 3. Configurar o `application.properties`
+### 3. Configurar o `application.yml`
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/hotdogtaz
-spring.datasource.username=hotdogtaz
-spring.datasource.password=hotdogtaz123
-spring.datasource.driver-class-name=org.postgresql.Driver
-
-spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+```yml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hotdogtaz
+    username: hotdogtaz
+    password: hotdogtaz123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 ```
 
 ### 4. Rodar o projeto
