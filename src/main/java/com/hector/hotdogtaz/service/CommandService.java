@@ -3,6 +3,7 @@ package com.hector.hotdogtaz.service;
 import com.hector.hotdogtaz.dto.request.Command.CreateCommandDTO;
 import com.hector.hotdogtaz.dto.request.Command.UpdateCommandDTO;
 import com.hector.hotdogtaz.dto.response.CommandResponseDTO;
+import com.hector.hotdogtaz.exception.ResourceNotFoundException;
 import com.hector.hotdogtaz.mapper.CommandMapper;
 import com.hector.hotdogtaz.model.Command;
 import com.hector.hotdogtaz.repository.CommandRepository;
@@ -31,7 +32,7 @@ public class CommandService {
 
     public CommandResponseDTO update(UpdateCommandDTO dto, Long id) {
         Command command = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("command", id));
 
         command.setStatus(dto.status());
 
@@ -45,7 +46,7 @@ public class CommandService {
 
     public CommandResponseDTO findById(Long id) {
         Command command = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("command", id));
         return mapper.toResponse(command);
     }
 

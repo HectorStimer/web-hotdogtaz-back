@@ -104,4 +104,10 @@ public class User {
     public void setType(UserType type) {
         this.type = type;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
+    }
+
 }

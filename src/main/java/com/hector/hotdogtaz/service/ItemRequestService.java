@@ -3,6 +3,8 @@ package com.hector.hotdogtaz.service;
 import com.hector.hotdogtaz.dto.request.Request.AddItemRequestDTO;
 import com.hector.hotdogtaz.dto.request.Request.UpdateItemRequestDTO;
 import com.hector.hotdogtaz.dto.response.ItemRequestResponseDTO;
+import com.hector.hotdogtaz.exception.BusinessException;
+import com.hector.hotdogtaz.exception.ResourceNotFoundException;
 import com.hector.hotdogtaz.mapper.ItemRequestMapper;
 import com.hector.hotdogtaz.model.*;
 import com.hector.hotdogtaz.repository.IngredientRepository;
@@ -32,16 +34,15 @@ public class ItemRequestService {
 
     public ItemRequestResponseDTO addItem(Long requestId, AddItemRequestDTO dto) {
         Request request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Request", requestId));
 
-        //n pode adicionar item em pedido finalizado
         if (request.getStatus() == Request.Status.COMPLETED ||
                 request.getStatus() == Request.Status.CANCELED) {
-            throw new RuntimeException("Cannot add item to a finished request");
+            throw new BusinessException("Cannot add item to a finished request");
         }
 
         Product product = productRepository.findById(dto.productId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", dto.productId()));
 
         ItemRequest item = new ItemRequest(
                 request, product, dto.quantity(),
@@ -51,7 +52,7 @@ public class ItemRequestService {
         if (dto.ingredients() != null) {
             dto.ingredients().forEach(actionDTO -> {
                 Ingredient ingredient = ingredientRepository.findById(actionDTO.ingredientId())
-                        .orElseThrow(() -> new RuntimeException("Ingredient not found"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Ingredient", actionDTO.ingredientId()));
                 item.getIngredients().add(
                         new RequestItemIngredient(item, ingredient, actionDTO.action())
                 );
@@ -66,12 +67,12 @@ public class ItemRequestService {
     public ItemRequestResponseDTO updateItem(Long requestId, Long itemId,
                                              UpdateItemRequestDTO dto) {
         Request request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Request", requestId));
 
         ItemRequest item = request.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Item not found in this request"));
+                .orElseThrow(() -> new BusinessException("Item not found in this request"));
 
         item.setQuantity(dto.quantity());
         item.setObservation(dto.observation());
@@ -82,13 +83,13 @@ public class ItemRequestService {
 
     public void removeItem(Long requestId, Long itemId) {
         Request request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Request", requestId));
 
         boolean removed = request.getItems()
                 .removeIf(i -> i.getId().equals(itemId));
 
         if (!removed)
-            throw new RuntimeException("Item not found in this request");
+            throw new BusinessException("Item not found in this request");
 
         requestRepository.save(request);
     }
