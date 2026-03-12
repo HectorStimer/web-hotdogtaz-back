@@ -39,6 +39,7 @@ public class RequestMapper {
                 request.getStatus(),
                 request.getObservation(),
                 request.getOrderDate(),
+                request.getCommand().getId(),
                 request.getItems().stream().map(itemRequestMapper::toResponse).toList(),
                 request.getEvents().stream().map(requestEventMapper::toResponse).toList()
         );
