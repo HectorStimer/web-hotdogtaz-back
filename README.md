@@ -1,10 +1,10 @@
-#  Hot Dog Taz — Backend API
+# Hot Dog Taz — Backend API
 
 Sistema de gerenciamento de pedidos para a lancheria **Hot Dog Taz**, desenvolvido com Spring Boot, React e PostgreSQL.
 
 ---
 
-##  Descrição
+## Descrição
 
 A API permite o gerenciamento completo da lancheria, com dois perfis de acesso:
 
@@ -13,14 +13,15 @@ A API permite o gerenciamento completo da lancheria, com dois perfis de acesso:
 
 ---
 
-## Tecnologias
+##  Tecnologias
 
 - Java 17
-- Spring Boot
+- Spring Boot 4.0.2
 - Spring Data JPA
 - Spring Security + Keycloak (OAuth2/JWT)
-- PostgreSQL
+- PostgreSQL 16
 - Maven
+- Docker
 
 ---
 
@@ -105,33 +106,46 @@ REQUEST_EVENT
 
 - Java 17+
 - Maven
-- PostgreSQL
-- Keycloak (opcional para desenvolvimento)
+- Docker Desktop
 
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/hotdogtaz.git
-cd hotdogtaz
+git clone https://github.com/HectorStimer/web-hotdogtaz-back.git
+cd web-hotdogtaz-back
 ```
 
-### 2. Configurar o banco de dados
+### 2. Subir o banco de dados e Keycloak com Docker
 
-Crie o banco no PostgreSQL:
+```bash
+docker compose up -d
+```
 
-```sql
-CREATE DATABASE hotdogtaz;
+Isso vai subir dois containers:
+- **PostgreSQL** na porta `5432`
+- **Keycloak** na porta `8180`
+
+Para verificar se estão rodando:
+```bash
+docker ps
+```
+
+Para parar os containers:
+```bash
+docker compose down
 ```
 
 ### 3. Configurar o `application.yml`
 
-```yaml
+```yml
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/hotdogtaz
-    username: seu_usuario
-    password: sua_senha
+    username: hotdogtaz
+    password: hotdogtaz123
+    driver-class-name: org.postgresql.Driver
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -214,9 +228,9 @@ A API estará disponível em `http://localhost:8080`
 
 ---
 
-## 🔐 Autenticação
+##  Autenticação
 
-A API utiliza **Keycloak** para autenticação via OAuth2/JWT.
+A API utiliza **Keycloak** para autenticação via OAuth2/JWT, disponível em `http://localhost:8180`.
 
 Perfis de acesso:
 - `ADMIN` — acesso total
@@ -229,7 +243,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 src/main/java/com/hector/hotdogtaz/
@@ -238,6 +252,7 @@ src/main/java/com/hector/hotdogtaz/
 ├── dto/
 │   ├── request/     # DTOs de entrada
 │   └── response/    # DTOs de saída
+├── exception/       # Exceptions customizadas e GlobalExceptionHandler
 ├── mapper/          # Mapeamento entidade ↔ DTO
 ├── model/           # Entidades JPA
 ├── repository/      # Repositórios Spring Data
