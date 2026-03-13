@@ -22,10 +22,12 @@ public class UserService {
 
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final KeycloakUserService keycloakUserService;
 
-    public UserService(UserRepository repository, UserMapper mapper) {
+    public UserService(UserRepository repository, UserMapper mapper, KeycloakUserService keycloakUserService) {
         this.repository = repository;
         this.mapper = mapper;
+        this.keycloakUserService=keycloakUserService;
     }
 
     private void validateEmail(String email) {
@@ -37,6 +39,7 @@ public class UserService {
         logger.info("Creating a new User");
         validateEmail(dto.email());
         User user = new User(dto.name(), dto.email(), dto.password(), true, dto.type());
+        keycloakUserService.createUser(user, dto.password());
         return mapper.toResponse(repository.save(user));
     }
 
@@ -55,6 +58,8 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
         user.setActive(false);
         repository.save(user);
+
+        keycloakUserService.updateUserStatus(user.getEmail(), false);
     }
 
     public List<UserResponseDTO> listAll() {

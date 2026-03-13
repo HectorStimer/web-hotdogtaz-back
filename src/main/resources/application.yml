@@ -14,3 +14,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+keycloak:
+  admin:
+    server-url: http://localhost:8180
+    realm: master
+    client-id: admin-cli
+    username: admin
+    password: admin123
+  app:
+    realm: hotdogtaz
