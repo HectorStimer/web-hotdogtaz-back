@@ -5,6 +5,7 @@ import com.hector.hotdogtaz.dto.request.Product.CreateProductDTO;
 import com.hector.hotdogtaz.dto.request.Product.UpdateProductDTO;
 import com.hector.hotdogtaz.dto.response.ProductResponseDTO;
 import com.hector.hotdogtaz.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,13 @@ public class ProductController{
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> create(@RequestBody CreateProductDTO dto){
+    public ResponseEntity<ProductResponseDTO> create(@Valid @RequestBody CreateProductDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> update(@PathVariable Long id,
-                                                     @RequestBody UpdateProductDTO dto){
+                                                     @Valid @RequestBody UpdateProductDTO dto){
         return ResponseEntity.ok(service.update(dto, id));
     }
 

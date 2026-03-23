@@ -4,6 +4,7 @@ package com.hector.hotdogtaz.controller;
 import com.hector.hotdogtaz.dto.request.Category.CreateCategoryDTO;
 import com.hector.hotdogtaz.dto.response.CategoryResponseDTO;
 import com.hector.hotdogtaz.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> create(@RequestBody CreateCategoryDTO dto){
+    public ResponseEntity<CategoryResponseDTO> create(@Valid @RequestBody CreateCategoryDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
 
     }
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id,
-                                                      @RequestBody CreateCategoryDTO dto) {
+                                                      @Valid @RequestBody CreateCategoryDTO dto) {
         return ResponseEntity.ok(service.update(dto, id));
     }
 

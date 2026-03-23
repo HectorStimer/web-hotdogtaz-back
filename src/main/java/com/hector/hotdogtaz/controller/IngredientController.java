@@ -4,6 +4,7 @@ package com.hector.hotdogtaz.controller;
 import com.hector.hotdogtaz.dto.request.Ingredient.IngredientDTO;
 import com.hector.hotdogtaz.dto.response.IngredientResponseDTO;
 import com.hector.hotdogtaz.service.IngredientService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<IngredientResponseDTO> create(@RequestBody IngredientDTO dto){
+    public ResponseEntity<IngredientResponseDTO> create(@Valid @RequestBody IngredientDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
     }
 
