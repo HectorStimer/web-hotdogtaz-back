@@ -1,10 +1,10 @@
-#  Hot Dog Taz — Backend API
+# 🌭 Hot Dog Taz — Backend API
 
 API REST do sistema de gerenciamento da lancheria **Hot Dog Taz**, desenvolvida com Spring Boot e PostgreSQL.
 
 ---
 
-##  Descrição
+## 📋 Descrição
 
 A API permite o gerenciamento completo da lancheria, com dois perfis de acesso:
 
@@ -13,7 +13,7 @@ A API permite o gerenciamento completo da lancheria, com dois perfis de acesso:
 
 ---
 
-##  Tecnologias
+## 🛠️ Tecnologias
 
 | Tecnologia | Versão | Uso |
 |---|---|---|
@@ -26,11 +26,11 @@ A API permite o gerenciamento completo da lancheria, com dois perfis de acesso:
 | PostgreSQL | 16 | Banco de dados relacional |
 | Keycloak | 24.0 | Servidor de autenticação (SSO) |
 | Maven | - | Gerenciador de dependências |
-| Docker | - | Containers para banco e Keycloak |
+| Docker | - | Containers para banco, Keycloak e backend |
 
 ---
 
-##  Diagrama do Banco de Dados
+## 🗃️ Diagrama do Banco de Dados
 
 ```
 CATEGORY ────────────────────────────────────────────────────
@@ -115,13 +115,14 @@ REQUEST_EVENT ──────────────────────
 
 ---
 
-##  Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
 src/main/java/com/hector/hotdogtaz/
 │
 ├── config/
 │   ├── CorsConfig.java             # Libera requisições do frontend (localhost:5173)
+│   ├── KeycloakAdminConfig.java    # Configura o client admin do Keycloak
 │   └── SecurityConfig.java         # Define regras de acesso por perfil e valida JWT
 │
 ├── controller/
@@ -212,16 +213,17 @@ src/main/java/com/hector/hotdogtaz/
 │   ├── CommandService.java         # Regras: recalcula total ao fechar comanda
 │   ├── IngredientService.java      # Regras: inativação de ingrediente
 │   ├── ItemRequestService.java     # Regras: valida status da comanda antes de adicionar item
+│   ├── KeycloakUserService.java    # Integração com Keycloak Admin API
 │   ├── ProductService.java         # Regras: busca categoria e ingredientes por ID
 │   ├── RequestService.java         # Regras: cria evento automático a cada mudança de status
-│   └── UserService.java            # Regras: valida email duplicado antes de salvar
+│   └── UserService.java            # Regras: valida email duplicado, cria usuário no Keycloak
 │
 └── HotdogtazApplication.java       # Classe principal — ponto de entrada da aplicação
 ```
 
 ---
 
-##  Como rodar
+## 🚀 Como rodar
 
 ### Pré-requisitos
 
@@ -236,22 +238,50 @@ git clone https://github.com/HectorStimer/web-hotdogtaz-back.git
 cd web-hotdogtaz-back
 ```
 
-### 2. Subir os containers com Docker
+### 2. Configurar as variáveis de ambiente
+
+Cria o arquivo `application-local.yml` na pasta `src/main/resources/`:
+
+```yaml
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/hotdogtaz
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hotdogtaz
+    username: hotdogtaz
+    password: hotdogtaz123
+
+keycloak:
+  admin:
+    server-url: http://localhost:8180
+    username: admin
+    password: admin123
+  app:
+    realm: hotdogtaz
+```
+
+> ⚠️ O arquivo `application-local.yml` está no `.gitignore` e não é versionado.
+
+### 3. Subir os containers com Docker
 
 ```bash
-docker compose up -d
+docker compose up --build
 ```
 
 Isso vai subir:
 - **PostgreSQL** na porta `5432`
 - **Keycloak** na porta `8180`
+- **Backend** na porta `8080`
 
 ```bash
-docker ps          # verificar se estão rodando
+docker ps            # verificar se estão rodando
 docker compose down  # parar os containers
 ```
 
-### 3. Configurar o Keycloak
+### 4. Configurar o Keycloak
 
 Acessa `http://localhost:8180` com login `admin` / senha `admin123` e siga os passos:
 
@@ -262,7 +292,7 @@ Acessa `http://localhost:8180` com login `admin` / senha `admin123` e siga os pa
 **Criar Client:**
 - Menu lateral → **Clients** → **Create client**
 - Client ID: `hotdogtaz-front` → **Next**
-- Ativa **Standard flow** → **Next**
+- Ativa apenas **Standard flow** → **Next**
 - Valid redirect URIs: `http://localhost:5173/*`
 - Web origins: `http://localhost:5173`
 - **Save**
@@ -278,41 +308,11 @@ Acessa `http://localhost:8180` com login `admin` / senha `admin123` e siga os pa
 - Aba **Credentials** → **Set password** → define senha → desativa **Temporary** → **Save**
 - Aba **Role mapping** → **Assign role** → seleciona `ADMIN` → **Assign**
 
-### 4. Configurar o `application.yml`
-
-```yaml
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8180/realms/hotdogtaz
-  datasource:
-    url: jdbc:postgresql://localhost:5432/hotdogtaz
-    username: hotdogtaz
-    password: hotdogtaz123
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-```
-
-### 5. Rodar o projeto
-
-Pelo IntelliJ: clica em **Run** na classe `HotdogtazApplication`
-
-Ou pelo terminal:
-```bash
-mvn spring-boot:run
-```
-
-A API estará disponível em `http://localhost:8080`
+> ⚠️ Ao usar Docker, o Keycloak ainda precisa ser configurado manualmente na primeira vez.
 
 ---
 
-##  Endpoints da API
+## 📡 Endpoints da API
 
 ### Categorias `/api/v1/categories`
 | Método | Rota | Descrição | Perfil |
@@ -373,7 +373,7 @@ A API estará disponível em `http://localhost:8080`
 
 ---
 
-##  Autenticação
+## 🔐 Autenticação
 
 A API usa **Keycloak** com OAuth2/JWT disponível em `http://localhost:8180`.
 
@@ -385,3 +385,5 @@ Authorization: Bearer <token>
 Perfis:
 - `ADMIN` — acesso total ao sistema
 - `CLERK` — acesso restrito (não acessa endpoints de usuários)
+
+> Ao criar um usuário pela API, ele é automaticamente criado no Keycloak com a role correspondente.
