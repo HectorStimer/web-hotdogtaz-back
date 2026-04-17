@@ -3,11 +3,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/hotdogtaz
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
   datasource:
-    url: jdbc:postgresql://localhost:5432/hotdogtaz
-    username: hotdogtaz
-    password: hotdogtaz123
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -17,10 +17,10 @@ spring:
 
 keycloak:
   admin:
-    server-url: http://localhost:8180
+    server-url: ${KEYCLOAK_SERVER_URL}
     realm: master
     client-id: admin-cli
-    username: admin
-    password: admin123
+    username: ${KEYCLOAK_ADMIN_USERNAME}
+    password: ${KEYCLOAK_ADMIN_PASSWORD}
   app:
-    realm: hotdogtaz
+    realm: ${KEYCLOAK_REALM}
