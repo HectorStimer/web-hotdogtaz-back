@@ -9,6 +9,7 @@ import com.hector.hotdogtaz.dto.response.ItemRequestResponseDTO;
 import com.hector.hotdogtaz.dto.response.RequestResponseDTO;
 import com.hector.hotdogtaz.service.ItemRequestService;
 import com.hector.hotdogtaz.service.RequestService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,14 +28,14 @@ public class RequestController {
     }
 
     @PostMapping
-    public ResponseEntity<RequestResponseDTO> create(@RequestBody CreateRequestDTO dto){
+    public ResponseEntity<RequestResponseDTO> create(@Valid @RequestBody CreateRequestDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
 
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<RequestResponseDTO> update(@PathVariable Long id,
-                                                     @RequestBody UpdateRequestDTO dto) {
+                                                     @Valid @RequestBody UpdateRequestDTO dto) {
         return ResponseEntity.ok(service.update(dto, id));
     }
 
@@ -57,7 +58,7 @@ public class RequestController {
 
     @PostMapping("/{id}/items")
     public ResponseEntity<ItemRequestResponseDTO> addItem(@PathVariable Long id,
-                                                          @RequestBody AddItemRequestDTO dto) {
+                                                          @Valid @RequestBody AddItemRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(itemRequestService.addItem(id, dto));
     }
@@ -65,7 +66,7 @@ public class RequestController {
     @PatchMapping("/{id}/items/{itemId}")
     public ResponseEntity<ItemRequestResponseDTO> updateItem(@PathVariable Long id,
                                                              @PathVariable Long itemId,
-                                                             @RequestBody UpdateItemRequestDTO dto) {
+                                                             @Valid @RequestBody UpdateItemRequestDTO dto) {
         return ResponseEntity.ok(itemRequestService.updateItem(id, itemId, dto));
     }
 

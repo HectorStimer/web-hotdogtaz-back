@@ -1,10 +1,16 @@
 package com.hector.hotdogtaz.dto.request.Command;
 
-import com.hector.hotdogtaz.model.Request;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-import java.util.List;
+public record CreateCommandDTO(
+        @NotNull(message = "Número da comanda é obrigatório")
+        @Positive(message = "Número da comanda deve ser maior que zero")
+        Integer number,
 
-public record CreateCommandDTO(Integer number,
-                               Integer tableNumber,
-                               String observation) {
-}
+        @NotNull(message = "Número da mesa é obrigatório")
+        @Positive(message = "Número da mesa deve ser maior que zero")
+        Integer tableNumber,
+
+        String observation
+) {}

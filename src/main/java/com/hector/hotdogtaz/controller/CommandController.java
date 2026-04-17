@@ -5,6 +5,7 @@ import com.hector.hotdogtaz.dto.request.Command.CreateCommandDTO;
 import com.hector.hotdogtaz.dto.request.Command.UpdateCommandDTO;
 import com.hector.hotdogtaz.dto.response.CommandResponseDTO;
 import com.hector.hotdogtaz.service.CommandService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,12 +23,12 @@ public class CommandController {
     }
 
     @PostMapping
-    public ResponseEntity<CommandResponseDTO> create(@RequestBody CreateCommandDTO dto){
+    public ResponseEntity<CommandResponseDTO> create( @Valid @RequestBody CreateCommandDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save((dto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommandResponseDTO> update(@PathVariable Long id,@RequestBody UpdateCommandDTO dto){
+    public ResponseEntity<CommandResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UpdateCommandDTO dto){
         return ResponseEntity.ok(service.update(dto, id));
     }
 

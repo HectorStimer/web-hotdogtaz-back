@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16
@@ -12,6 +10,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotdogtaz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
@@ -23,11 +26,34 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres:5432/hotdogtaz
       KC_DB_USERNAME: hotdogtaz
       KC_DB_PASSWORD: hotdogtaz123
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
     ports:
       - "8180:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     command: start-dev
+
+  backend:
+    build: .
+    container_name: hotdogtaz-backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/hotdogtaz
+      DB_USERNAME: hotdogtaz
+      DB_PASSWORD: hotdogtaz123
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/hotdogtaz
+      KEYCLOAK_SERVER_URL: http://keycloak:8080
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KEYCLOAK_REALM: hotdogtaz
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
 
 volumes:
   postgres_data:
