@@ -42,7 +42,8 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/hotdogtaz
       DB_USERNAME: hotdogtaz
       DB_PASSWORD: hotdogtaz123
-      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/hotdogtaz
+      KEYCLOAK_ISSUER_URI: http://localhost:8180/realms/hotdogtaz
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/hotdogtaz/protocol/openid-connect/certs
       KEYCLOAK_SERVER_URL: http://keycloak:8080
       KEYCLOAK_ADMIN_USERNAME: admin
       KEYCLOAK_ADMIN_PASSWORD: admin123
